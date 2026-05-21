@@ -145,11 +145,11 @@ Tag each new file with a comment at the top to distinguish from the original aud
 
 ### 6. Update UPLIFT.md
 
-Two updates to make:
+**a) UPLIFT.md — three updates:**
 
-**a) Issue Index:** Append new findings to the Issue Index section under each category. Update the summary table counts. Do not rewrite the file — append only.
+Append new findings to the `## Issue Index` section under each category heading. Use the format: `- [Title](path) — severity — status — impact`. Update the `## Summary` count table to reflect new totals. Do not rewrite the file — append only.
 
-**b) Scan Coverage table:** Add a new row to the Scan Coverage table:
+**c) Scan Coverage table:** Add a new row to the Scan Coverage table:
 
 ```
 | {YYYY-MM-DD} | {GitNexus MCP | direct read} | {target path} | {N scanned}/{N total} | {complete | partial} |
@@ -232,6 +232,7 @@ Before marking this skill complete:
 - [ ] All 5 audit dimensions were analyzed for the target
 - [ ] Deduplication ran — no duplicate issue files created
 - [ ] New issue files follow the standard format with source tag
+- [ ] `docs/uplift/UPLIFT.md` Issue Index updated with new entries under each category
 - [ ] UPLIFT.md was updated (append only — no overwrites)
 - [ ] Coverage report was shown
 - [ ] No existing issue files were modified

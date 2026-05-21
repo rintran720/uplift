@@ -12,7 +12,7 @@ Show pending issues across all categories, ordered by priority. Let the user pic
 **Announce at start:** "I'm using the uplift-fix skill to work through pending issues."
 
 <HARD-GATE>
-Do NOT run without `docs/uplift/UPLIFT.md` and at least one `**Status:** pending` issue across any category. If missing → tell user to run `/uplift-audit` first.
+Do NOT run without `docs/uplift/UPLIFT.md` containing at least one `pending` entry in the `## Issue Index` section. If UPLIFT.md is missing, tell the user to run `/uplift-audit` first.
 </HARD-GATE>
 
 <HARD-GATE>
@@ -25,9 +25,9 @@ If any issue has `**Status:** in-progress`, offer to resume that issue before sh
 
 ## Checklist
 
-1. **Read all issue files** — all categories, all statuses
+1. **Read UPLIFT.md Issue Index** — one read, all issues: `## Issue Index` section in `docs/uplift/UPLIFT.md`
 2. **Check for in-progress issues** — offer resume if found
-3. **Check for exposed secrets** — if any security issue mentions hardcoded secrets, run the Exposed Secrets Protocol before continuing
+3. **Check for exposed secrets** — scan Issue Index security entries for secret/credential/token in title or impact
 4. **Show category menu** — ordered by priority
 5. **User picks category** → show issue menu for that category
 6. **User picks issue(s)** → execute fix flow
@@ -39,7 +39,7 @@ If any issue has `**Status:** in-progress`, offer to resume that issue before sh
 
 ```dot
 digraph uplift_fix {
-    "Read all issue files" [shape=box];
+    "Read UPLIFT.md Issue Index" [shape=box];
     "In-progress issue?" [shape=diamond];
     "Offer resume" [shape=box];
     "Exposed secrets?" [shape=diamond];
@@ -59,7 +59,7 @@ digraph uplift_fix {
     "Category empty?" [shape=diamond];
     "Done" [shape=doublecircle];
 
-    "Read all issue files" -> "In-progress issue?";
+    "Read UPLIFT.md Issue Index" -> "In-progress issue?";
     "In-progress issue?" -> "Offer resume" [label="yes"];
     "In-progress issue?" -> "Exposed secrets?" [label="no"];
     "Offer resume" -> "Exposed secrets?";
@@ -88,23 +88,18 @@ digraph uplift_fix {
 
 ## Step-by-Step
 
-### 1. Read All Issue Files
+### 1. Read UPLIFT.md Issue Index
 
-Read every `.md` file under:
-- `docs/uplift/bugs/`
-- `docs/uplift/security/`
-- `docs/uplift/performance/`
-- `docs/uplift/refactor/`
-- `docs/uplift/ai-readiness/`
+Read **one file**: `docs/uplift/UPLIFT.md`. Parse the `## Issue Index` section.
 
-For each file, extract:
-- `**Status:**` (pending / in-progress / done / skipped / wont-fix)
-- `**Severity:**` (critical / high / medium / low)
-- `**File:**` line
-- `**Impact:**` line
-- Title (first `# ` heading)
+Each entry has the format:
+```
+- [Title](category/YYYY-MM-DD-slug.md) — severity — status — impact one-liner
+```
 
-Collect only `pending` and `in-progress` files for the menus. Ignore `done`, `skipped`, `wont-fix`.
+Extract: path, severity, status, title, impact, and category (from the `### {Category}` sub-heading). Filter to entries where `status` is `pending` or `in-progress`. Use this data to build all menus — do NOT read individual issue files at this stage.
+
+**Fallback:** If UPLIFT.md is missing or has no Issue Index section, fall back to reading individual files under `docs/uplift/{category}/`.
 
 ### 2. Check for In-Progress Issues
 
@@ -129,7 +124,7 @@ If user picks 2: continue to step 3.
 
 ### 3. Exposed Secrets Protocol
 
-If any security issue's `## Problem` section mentions hardcoded credentials, API keys, tokens, or passwords in source code:
+If any Issue Index entry under `### Security` has `title` or `impact` containing any of: `hardcoded`, `secret`, `credential`, `token`, `password`, `api key`, `private key`:
 
 ```
 🚨 Exposed secret detected in source code.
@@ -218,17 +213,19 @@ Process each selected issue in order (critical first, then high, medium, low; ti
 
 #### 6a. Update status to in-progress
 
-Edit the issue file immediately:
+Read the individual issue file (first time reading the full file). Then make two updates:
 
-Change:
-```
-**Status:** pending
-```
-To:
-```
-**Status:** in-progress
-Started: {YYYY-MM-DD}
-```
+1. **Issue file** — change:
+   ```
+   **Status:** pending
+   ```
+   To:
+   ```
+   **Status:** in-progress
+   Started: {YYYY-MM-DD}
+   ```
+
+2. **UPLIFT.md Issue Index** — update the `status` field for this entry from `pending` to `in-progress`.
 
 This ensures the session can be resumed if interrupted.
 
@@ -260,40 +257,41 @@ This executes the approved plan with TDD. Do not apply any code changes outside 
 
 #### 6e. After execution succeeds
 
-If tests pass and execution completes:
+If tests pass and execution completes, make two updates:
 
-Update the issue file — replace:
-```
-**Status:** in-progress
-Started: {YYYY-MM-DD}
-```
-With:
-```
-**Status:** done
-Fixed: {YYYY-MM-DD}
-Change: {one sentence describing what was changed and why it matters}
-```
+1. **Issue file** — replace:
+   ```
+   **Status:** in-progress
+   Started: {YYYY-MM-DD}
+   ```
+   With:
+   ```
+   **Status:** done
+   Fixed: {YYYY-MM-DD}
+   Change: {one sentence describing what was changed and why it matters}
+   ```
+
+2. **UPLIFT.md Issue Index** — update the `status` field for this entry to `done`.
 
 If the user declines to fix during brainstorming or planning:
 
-Update the issue file — replace:
-```
-**Status:** in-progress
-Started: {YYYY-MM-DD}
-```
-With:
-```
-**Status:** skipped
-Reviewed: {YYYY-MM-DD}
-Reason: {user's reason, or "declined during planning"}
-```
+1. **Issue file** — replace:
+   ```
+   **Status:** in-progress
+   Started: {YYYY-MM-DD}
+   ```
+   With:
+   ```
+   **Status:** skipped
+   Reviewed: {YYYY-MM-DD}
+   Reason: {user's reason, or "declined during planning"}
+   ```
+
+2. **UPLIFT.md Issue Index** — update the `status` field for this entry to `skipped`.
 
 ### 7. Update UPLIFT.md
 
-After each fixed or skipped issue:
-
-1. Update the category row in the summary table (decrement pending, increment done or skipped)
-2. If fixed: add the issue to a `## Fixed` section at the bottom, with date and one-line summary
+After each fixed or skipped issue, update the `## Summary` count table: decrement pending, increment done or skipped for that category row.
 
 ### 8. Loop
 
@@ -347,12 +345,13 @@ Rationale: security criticals are exploitable now; bug criticals crash in normal
 
 Before marking this skill complete:
 
-- [ ] All issue files across all categories were read at the start
+- [ ] `docs/uplift/UPLIFT.md` Issue Index was read at the start (not individual files)
 - [ ] In-progress issues were surfaced before showing menus
 - [ ] Exposed secrets were handled before any code changes
 - [ ] Category menu was ordered by priority with reasoning shown
 - [ ] Every fix went through brainstorming → writing-plans → executing-plans
 - [ ] Every fixed issue has `**Status:** done` with `Fixed:` date and `Change:` summary
 - [ ] Every skipped issue has `**Status:** skipped` with `Reviewed:` date and `Reason:`
+- [ ] UPLIFT.md Issue Index `status` updated after each fix
 - [ ] UPLIFT.md summary table counts are updated after each fix
 - [ ] No code was changed outside of superpowers:executing-plans

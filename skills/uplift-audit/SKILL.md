@@ -244,6 +244,7 @@ Point to the right approach: "use parameterized queries", "add null check before
 - Things that "could be improved" with no real cost if left alone
 - Issues already covered by a linter or formatter
 
+
 ### 10. Write docs/uplift/UPLIFT.md
 
 Populate the Scan Coverage table with:
@@ -281,7 +282,7 @@ Generated: {YYYY-MM-DD}
 ## Issue Index
 
 ### Bugs
-{- [Title](bugs/YYYY-MM-DD-slug.md) — Severity: X — one-line summary}
+{- [Title](bugs/YYYY-MM-DD-slug.md) — severity — status — impact one-liner}
 
 ### Security
 {...}
@@ -412,6 +413,7 @@ Before marking this skill complete:
 - [ ] Each of the five dimensions was analyzed
 - [ ] Every real finding has its own issue file — no bundled issues
 - [ ] Every issue file has severity, file + line, impact, problem, suggested fix, and `Status: pending`
+- [ ] `docs/uplift/UPLIFT.md` Issue Index updated — one entry per new issue with severity, status, and impact
 - [ ] `docs/uplift/UPLIFT.md` exists with the summary table filled in
 - [ ] Exactly one next step is recommended with a reason
 - [ ] No code was written or modified during this skill

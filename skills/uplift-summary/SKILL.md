@@ -54,18 +54,26 @@ digraph uplift_summary {
 
 ## Step-by-Step
 
-### 1. Read All Issue Files
+### 1. Read Issue Index
 
-Read every `.md` file in `docs/uplift/bugs/`, `docs/uplift/security/`, `docs/uplift/performance/`, `docs/uplift/refactor/`, `docs/uplift/ai-readiness/`.
+Read **one file**: `docs/uplift/UPLIFT.md`. Parse the `## Issue Index` section.
 
-Separate by reading the `**Status:**` field in each file:
+Each entry: `- [Title](path) — severity — status — impact`
+
+Use this to compute all counts by category (group by the `### {Category}` sub-heading, count by status). No need to open individual issue files for counting.
+
+For the "What Changed" detail section, read individual files only for entries where `status = done` — typically a small set.
+
+**Fallback:** If UPLIFT.md is missing or has no Issue Index, fall back to reading all individual files under `docs/uplift/{category}/`.
+
+Status values:
 - `done` — fixed and verified
 - `in-progress` — fix started but not yet complete
 - `pending` — found but not yet addressed
 - `skipped` — user explicitly declined to fix
 - `wont-fix` — intentionally not addressing
 
-If none of these directories exist, the audit has not run. Tell the user.
+If UPLIFT.md does not exist, the audit has not run. Tell the user.
 
 ### 2. Read context.md
 

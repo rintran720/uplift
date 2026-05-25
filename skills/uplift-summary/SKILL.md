@@ -90,8 +90,14 @@ For each category, count:
 ### 4. Assess AI-Readiness Delta
 
 - Does `CLAUDE.md` exist at the project root now?
-- Were any ai-readiness issues resolved?
+- Were any ai-readiness issues resolved (status `done`)?
 - Is the codebase meaningfully more legible than when uplift started?
+
+**CLAUDE.md delta rule:** Only count CLAUDE.md as an AI-readiness improvement if:
+- Before this session: no ai-readiness issues had status `done`
+- After this session: at least one ai-readiness issue has status `done`, AND `CLAUDE.md` exists at the project root
+
+Do NOT count CLAUDE.md as an AI-readiness gain if it was created by `/uplift-init` during this session without a corresponding `done` ai-readiness issue — that's structural setup, not a remediation.
 
 ### 5. Write docs/uplift/SUMMARY-{YYYY-MM-DD}.md
 

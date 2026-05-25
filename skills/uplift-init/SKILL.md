@@ -72,7 +72,7 @@ digraph uplift_init {
 
 ### 1. Scan Project Structure
 
-Walk the directory tree. Skip: `node_modules/`, `.git/`, `dist/`, `build/`, `__pycache__/`, `.next/`, `vendor/`, `target/`.
+Walk the directory tree. Skip: `node_modules/`, `.git/`, `dist/`, `build/`, `__pycache__/`, `.next/`, `vendor/`, `target/`, `coverage/`, `*.min.js`, `*.lock`.
 
 Note:
 - Entry points (main.py, index.ts, main.go, app.rb, src/main.rs, etc.)

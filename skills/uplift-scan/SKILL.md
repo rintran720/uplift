@@ -124,7 +124,7 @@ Use `impact` on critical findings to assess blast radius before filing.
 
 Read each file in the target path directly. Apply the same five-dimension analysis as `uplift-audit`.
 
-Skip: `node_modules/`, `.git/`, `dist/`, `build/`, `__pycache__/`, `*.min.js`, `*.lock`
+Skip: `node_modules/`, `.git/`, `dist/`, `build/`, `__pycache__/`, `.next/`, `vendor/`, `target/`, `coverage/`, `*.min.js`, `*.lock`
 
 ### 4. Deduplicate Against Existing Issues
 
@@ -147,7 +147,13 @@ Tag each new file with a comment at the top to distinguish from the original aud
 
 **a) UPLIFT.md — three updates:**
 
-Append new findings to the `## Issue Index` section under each category heading. Use the format: `- [Title](path) — severity — status — impact`. Update the `## Summary` count table to reflect new totals. Do not rewrite the file — append only.
+Append new findings to the `## Issue Index` section under each category heading. Update the `## Summary` count table to reflect new totals. Do not rewrite the file — append only.
+
+**b) Issue Index** — for each new issue file written in step 5, add a row to the appropriate `### {Category}` table in the Issue Index section of `UPLIFT.md`:
+
+```
+| [slug title](category/YYYY-MM-DD-slug.md) | severity | pending | one-line impact |
+```
 
 **c) Scan Coverage table:** Add a new row to the Scan Coverage table:
 
@@ -161,6 +167,8 @@ If files were skipped due to context limit: status = `partial`, and add the unco
 If "Gaps" already lists the target path (from a previous audit), remove that line after successfully scanning it.
 
 This keeps UPLIFT.md as the single source of truth for what has and hasn't been analyzed.
+
+**Dependency Order refresh:** If any newly added issue has severity `critical` or `high`, re-read the current Dependency Order prose in `UPLIFT.md` and update it to account for the new findings. New critical/high issues may change which fixes should be done first.
 
 ### 7. Show Coverage Report
 

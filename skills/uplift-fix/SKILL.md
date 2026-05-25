@@ -27,7 +27,7 @@ If any issue has `**Status:** in-progress`, offer to resume that issue before sh
 
 1. **Read UPLIFT.md Issue Index** — one read, all issues: `## Issue Index` section in `docs/uplift/UPLIFT.md`
 2. **Check for in-progress issues** — offer resume if found
-3. **Check for exposed secrets** — scan Issue Index security entries for secret/credential/token in title or impact
+3. **Check for exposed secrets** — scan all pending issue files for `**Secrets-related:** yes` field; trigger protocol if found
 4. **Show category menu** — ordered by priority
 5. **User picks category** → show issue menu for that category
 6. **User picks issue(s)** → execute fix flow
@@ -88,16 +88,28 @@ digraph uplift_fix {
 
 ## Step-by-Step
 
+> **Category names:** UPLIFT.md headings use Title-Case (`### Security`), but menus, paths, and status updates
+> use lowercase (`security`, `docs/uplift/security/`).
+> Mapping: `### Bugs` → `bugs`, `### Security` → `security`, `### Performance` → `performance`,
+> `### Refactor` → `refactor`, `### AI-Readiness` → `ai-readiness`.
+
 ### 1. Read UPLIFT.md Issue Index
 
 Read **one file**: `docs/uplift/UPLIFT.md`. Parse the `## Issue Index` section.
 
-Each entry has the format:
+The Issue Index uses **Markdown tables**. Each `### {Category}` section contains a table with columns `Title`, `Severity`, `Status`, and `Impact`:
+
 ```
-- [Title](category/YYYY-MM-DD-slug.md) — severity — status — impact one-liner
+### Bugs
+
+| Title | Severity | Status | Impact |
+|---|---|---|---|
+| [Missing await in payment handler](bugs/2026-05-22-missing-await-payment.md) | critical | pending | Payment may process twice |
 ```
 
-Extract: path, severity, status, title, impact, and category (from the `### {Category}` sub-heading). Filter to entries where `status` is `pending` or `in-progress`. Use this data to build all menus — do NOT read individual issue files at this stage.
+Extract from each row: the link text (title), link path (file path), Severity cell, Status cell, and Impact cell. Derive category from the `### {Category}` heading above the table. Filter to rows where `Status` is `pending` or `in-progress`. Use this data to build all menus — do NOT read individual issue files at this stage.
+
+When updating status after a fix: update the `Status` cell in the table row for that issue — change `pending` to `in-progress`, then `in-progress` to `done` (or `skipped`).
 
 **Fallback:** If UPLIFT.md is missing or has no Issue Index section, fall back to reading individual files under `docs/uplift/{category}/`.
 
@@ -116,6 +128,7 @@ If any issue has `**Status:** in-progress`, show:
 
   [1] Resume this issue
   [2] Start fresh from the category menu
+  [q] Quit uplift-fix
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
@@ -124,7 +137,9 @@ If user picks 2: continue to step 3.
 
 ### 3. Exposed Secrets Protocol
 
-If any Issue Index entry under `### Security` has `title` or `impact` containing any of: `hardcoded`, `secret`, `credential`, `token`, `password`, `api key`, `private key`:
+Before displaying any menu, scan all pending issue files for the `**Secrets-related:** yes` field (present in the issue file's header). If any pending issue has this field, trigger the exposed-secrets protocol for that issue before allowing any code edits.
+
+If any pending issue has `**Secrets-related:** yes`:
 
 ```
 🚨 Exposed secret detected in source code.
@@ -170,6 +185,7 @@ Compute the priority order (see Ordering Rules below). Show all categories that 
 
 Reasoning: {one sentence explaining why the top category is recommended}
 
+  [q] Quit uplift-fix
   Enter number:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
@@ -198,6 +214,7 @@ After the user picks a category, show all pending issues in that category sorted
 
 [a] Fix all in order
 [b] Back to category menu
+[q] Quit uplift-fix
 
   Enter number, "a", or "b":
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -229,9 +246,22 @@ Read the individual issue file (first time reading the full file). Then make two
 
 This ensures the session can be resumed if interrupted.
 
-#### 6b. Invoke superpowers:brainstorming
+#### 6b. Fast-Track Check (skip brainstorming for trivial fixes)
 
-**REQUIRED SUB-SKILL.** Invoke via the `Skill` tool with this prompt context:
+**Fast-track (skip brainstorming):** An issue qualifies for fast-track if ALL three conditions are met:
+1. Severity is `low` or `medium`
+2. Category is `refactor` or `ai-readiness`
+3. The fix touches a single file
+
+For fast-track issues, skip `superpowers:brainstorming` and go directly to `superpowers:writing-plans` →
+`superpowers:executing-plans`. All other issues MUST go through the full three-step flow.
+
+Rationale: brainstorming is most valuable when there are cross-cutting tradeoffs or security implications.
+Single-file cosmetic and readability fixes have predictable outcomes.
+
+#### 6c. Invoke superpowers:brainstorming
+
+**REQUIRED SUB-SKILL** (skip for fast-track issues — see 6b above). Invoke via the `Skill` tool with this prompt context:
 
 > "We need to fix this issue: {full issue content — title, severity, file, impact, problem, suggested fix}.
 > The codebase context is in docs/uplift/context.md.
@@ -239,23 +269,24 @@ This ensures the session can be resumed if interrupted.
 
 Do not proceed to the next step until brainstorming has converged on an approach.
 
-#### 6c. Invoke superpowers:writing-plans
+#### 6d. Invoke superpowers:writing-plans
 
 **REQUIRED SUB-SKILL.** Invoke via the `Skill` tool with this prompt context:
 
 > "Write an implementation plan for fixing: {issue title}.
 > Agreed approach: {outcome of brainstorming}.
-> The plan MUST follow TDD discipline: write failing test → watch it fail → implement fix → watch test pass → refactor if needed."
+> The plan MUST follow TDD discipline: write failing test → watch it fail → implement fix → watch test pass → refactor if needed.
+> Include unit tests for edge cases, not just the happy path — the fix is only complete when the edge cases that caused the bug are also covered."
 
 Wait for the user to approve the plan before proceeding.
 
-#### 6d. Invoke superpowers:executing-plans
+#### 6e. Invoke superpowers:executing-plans
 
 **REQUIRED SUB-SKILL.** Invoke via the `Skill` tool.
 
 This executes the approved plan with TDD. Do not apply any code changes outside of this skill's execution.
 
-#### 6e. After execution succeeds
+#### 6f. After execution succeeds
 
 If tests pass and execution completes, make two updates:
 
@@ -327,6 +358,7 @@ Rationale: security criticals are exploitable now; bug criticals crash in normal
 |---|---|
 | "The fix is small, I'll just edit the file directly" | All code changes go through superpowers:executing-plans. No exceptions. |
 | "I'll skip brainstorming for obvious fixes" | Obvious fixes have non-obvious tradeoffs. Brainstorm first. |
+| "One happy-path test is enough" | The edge cases are where the bug lived. A fix without edge case tests guarantees a regression. |
 | "I'll update the status after all issues are done" | Update after each issue. Sessions get interrupted. |
 | "The user picked a category, so I should fix everything in it" | Show the issue menu first. The user picks individual issues or "all". |
 | "I'll recommend the most interesting fix, not the highest priority" | Priority order is fixed. Recommend by priority, not interest. |
@@ -354,4 +386,5 @@ Before marking this skill complete:
 - [ ] Every skipped issue has `**Status:** skipped` with `Reviewed:` date and `Reason:`
 - [ ] UPLIFT.md Issue Index `status` updated after each fix
 - [ ] UPLIFT.md summary table counts are updated after each fix
+- [ ] Plan included edge case unit tests, not just the happy path
 - [ ] No code was changed outside of superpowers:executing-plans

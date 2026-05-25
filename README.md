@@ -32,6 +32,7 @@ That's it. Open a Claude Code session in your project and Uplift is ready.
 |---|---|
 | `/uplift-init` | Scan the project, detect stack, create `docs/uplift/context.md` |
 | `/uplift-audit` | Read full source, find and file issues across 5 dimensions |
+| `/uplift-scan [path]` | Focused re-scan of a specific path or pattern; extends audit coverage without overwriting existing findings |
 | `/uplift-fix` | Work through pending issues by category using Superpowers flow (brainstorm → plan → execute) |
 | `/uplift-summary` | Generate a session report with before/after counts and next recommendations |
 
@@ -40,10 +41,11 @@ That's it. Open a Claude Code session in your project and Uplift is ready.
 ## Recommended Workflow
 
 ```
-/uplift-init
-/uplift-audit
-/uplift-fix
-/uplift-summary
+/uplift-init      ← always start here
+/uplift-audit     ← find all issues
+/uplift-scan [path]   ← optional: if audit missed areas
+/uplift-fix       ← work through all pending issues by priority
+/uplift-summary   ← generate report at the end
 ```
 
 Skip any step that isn't relevant. The order is a recommendation, not a requirement.

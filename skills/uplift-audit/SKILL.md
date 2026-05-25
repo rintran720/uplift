@@ -188,6 +188,10 @@ For each dimension, think like a senior engineer who has seen this bug cause a p
 - Functions that do something surprising given their name
 - Files > 300 lines with mixed concerns
 
+> **Category names:** Use lowercase for file paths and table values. Use Title-Case for `### Heading` in UPLIFT.md.
+> Mapping: `bugs` → `### Bugs`, `security` → `### Security`, `performance` → `### Performance`,
+> `refactor` → `### Refactor`, `ai-readiness` → `### AI-Readiness`.
+
 ### 9. Write One Issue File Per Finding
 
 For every real finding, write a file to the appropriate category directory:
@@ -204,6 +208,7 @@ Slug: lowercase, hyphen-separated, descriptive (e.g., `missing-await-in-payment-
 # {Title}
 
 **Severity:** critical | high | medium | low
+**Secrets-related:** yes  *(include this line only for findings involving hardcoded secrets, credentials, tokens, API keys, or passwords)*
 
 **File:** {path/to/file.ext} (line {X}–{Y})
 
@@ -282,19 +287,34 @@ Generated: {YYYY-MM-DD}
 ## Issue Index
 
 ### Bugs
-{- [Title](bugs/YYYY-MM-DD-slug.md) — severity — status — impact one-liner}
+
+| Title | Severity | Status | Impact |
+|---|---|---|---|
+| [slug title](bugs/YYYY-MM-DD-slug.md) | critical \| high \| medium \| low | pending | one-line impact summary |
 
 ### Security
-{...}
+
+| Title | Severity | Status | Impact |
+|---|---|---|---|
+| [slug title](security/YYYY-MM-DD-slug.md) | critical \| high \| medium \| low | pending | one-line impact summary |
 
 ### Performance
-{...}
+
+| Title | Severity | Status | Impact |
+|---|---|---|---|
+| [slug title](performance/YYYY-MM-DD-slug.md) | critical \| high \| medium \| low | pending | one-line impact summary |
 
 ### Refactor
-{...}
+
+| Title | Severity | Status | Impact |
+|---|---|---|---|
+| [slug title](refactor/YYYY-MM-DD-slug.md) | critical \| high \| medium \| low | pending | one-line impact summary |
 
 ### AI-Readiness
-{...}
+
+| Title | Severity | Status | Impact |
+|---|---|---|---|
+| [slug title](ai-readiness/YYYY-MM-DD-slug.md) | critical \| high \| medium \| low | pending | one-line impact summary |
 
 ## Dependency Order
 

@@ -35,12 +35,12 @@ Requires Node.js 18+. No npm account needed.
 cp -r uplift/ /path/to/your/project/
 ```
 
-`uplift/` must live at the project root. All skill output (`docs/uplift/`) is written relative to the project root, not the uplift install location.
+`.uplift/` must live at the project root. All skill output (`docs/uplift/`) is written relative to the project root, not the uplift install location.
 
 **2. Add this line to your `CLAUDE.md`** (create one if it doesn't exist):
 
 ```
-@uplift/CLAUDE.md
+@.uplift/CLAUDE.md
 ```
 
 ---

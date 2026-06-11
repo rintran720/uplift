@@ -11,10 +11,10 @@ const pkgRoot = path.join(__dirname, '..');
 
 let destDir, claudeMdPath;
 if (isGlobal) {
-  destDir = path.join(os.homedir(), '.claude', 'uplift');
+  destDir = path.join(os.homedir(), '.claude', '.uplift');
   claudeMdPath = path.join(os.homedir(), '.claude', 'CLAUDE.md');
 } else {
-  destDir = path.join(process.cwd(), 'uplift');
+  destDir = path.join(process.cwd(), '.uplift');
   claudeMdPath = path.join(process.cwd(), 'CLAUDE.md');
 }
 
@@ -34,7 +34,7 @@ for (const file of filesToCopy) {
   fs.copyFileSync(src, dest);
 }
 
-const claudeRef = '@uplift/CLAUDE.md';
+const claudeRef = '@.uplift/CLAUDE.md';
 if (fs.existsSync(claudeMdPath)) {
   const content = fs.readFileSync(claudeMdPath, 'utf8');
   if (!content.includes(claudeRef)) {

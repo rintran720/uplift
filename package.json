@@ -1,0 +1,21 @@
+{
+  "name": "uplift-claude",
+  "version": "1.0.0",
+  "description": "Install Uplift Claude Code skills for auditing and fixing legacy codebases",
+  "bin": {
+    "uplift-claude": "bin/install.js"
+  },
+  "files": [
+    "bin/",
+    "CLAUDE.md",
+    "skills/"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rintran720/uplift"
+  }
+}

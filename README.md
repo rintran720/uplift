@@ -8,6 +8,27 @@ Uplift audits your project, finds bugs, security issues, and performance problem
 
 ## Installation
 
+### Option A — one command (recommended)
+
+**Install for a single project** (adds `uplift/` to the current directory and updates `./CLAUDE.md`):
+
+```bash
+cd /path/to/your/project
+npx github:rintran720/uplift
+```
+
+**Install globally** (adds `uplift/` to `~/.claude/` and updates `~/.claude/CLAUDE.md`, so every Claude Code session has Uplift available):
+
+```bash
+npx github:rintran720/uplift --global
+```
+
+Requires Node.js 18+. No npm account needed.
+
+---
+
+### Option B — manual
+
 **1. Copy the `uplift/` directory into your project root:**
 
 ```bash
@@ -16,13 +37,15 @@ cp -r uplift/ /path/to/your/project/
 
 `uplift/` must live at the project root. All skill output (`docs/uplift/`) is written relative to the project root, not the uplift install location.
 
-**2. Add this line to your project's `CLAUDE.md`** (create one if it doesn't exist):
+**2. Add this line to your `CLAUDE.md`** (create one if it doesn't exist):
 
 ```
 @uplift/CLAUDE.md
 ```
 
-That's it. Open a Claude Code session in your project and Uplift is ready.
+---
+
+Open a Claude Code session and Uplift is ready.
 
 ---
 
